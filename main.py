@@ -1,43 +1,50 @@
+import os
 import asyncio
 from telethon import TelegramClient, events
-from config import *
 
-async def main():
-    client = TelegramClient(
+# ========= REQUIRED ENV VARIABLES =========
+API_ID = int(os.environ["API_ID"])
+API_HASH = os.environ["API_HASH"]
+BOT_TOKEN = os.environ["BOT_TOKEN"]
+SESSION_STRING = os.environ["SESSION_STRING"]
+
+# ========= CHANNEL CONFIG =========
+SOURCE_CHANNEL = "@pc_alert"
+DESTINATION_CHANNEL = "@alertbyotpman"
+
+# ========= TEXT FILTERS =========
+REMOVE_WORDS = [
+    "Powered By",
+    "@ProCampaign"
+]
+
+# ========= TELEGRAM CLIENT =========
+client = TelegramClient(
     SESSION_STRING,
     API_ID,
     API_HASH
 )
 
+@client.on(events.NewMessage(chats=SOURCE_CHANNEL))
+async def forward_message(event):
+    if not event.text:
+        return
 
-    @client.on(events.NewMessage(chats=SOURCE_CHANNELS))
-    async def handler(event):
-        text = event.text
-        if not text:
-            return
+    cleaned_lines = []
+    for line in event.text.split("\n"):
+        if any(word.lower() in line.lower() for word in REMOVE_WORDS):
+            continue
+        cleaned_lines.append(line)
 
-        lines = []
-        for line in text.split("\n"):
-            if any(word in line for word in REMOVE_WORDS):
-                continue
-            lines.append(line)
+    final_text = "\n".join(cleaned_lines).strip()
 
-        new_text = "\n".join(lines)
+    if final_text:
+        await client.send_message(DESTINATION_CHANNEL, final_text)
 
-        if new_text.strip():
-            await client.send_message(DESTINATION_CHANNEL, new_text)
-
-    
-    print("✅ Bot is running...")
+async def main():
+    await client.start(bot_token=BOT_TOKEN)
+    print("Bot is running ✅")
     await client.run_until_disconnected()
 
 if __name__ == "__main__":
     asyncio.run(main())
-    async def main():
-    await client.connect()
-    print("Bot is running ✅")
-    await client.run_until_disconnected()
-
-asyncio.run(main())
-
-
