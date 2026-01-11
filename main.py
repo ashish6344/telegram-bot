@@ -3,7 +3,12 @@ from telethon import TelegramClient, events
 from config import *
 
 async def main():
-    client = TelegramClient("session", API_ID, API_HASH)
+    client = TelegramClient(
+    SESSION_STRING,
+    API_ID,
+    API_HASH
+)
+
 
     @client.on(events.NewMessage(chats=SOURCE_CHANNELS))
     async def handler(event):
@@ -22,9 +27,17 @@ async def main():
         if new_text.strip():
             await client.send_message(DESTINATION_CHANNEL, new_text)
 
-    await client.start()
+    
     print("✅ Bot is running...")
     await client.run_until_disconnected()
 
 if __name__ == "__main__":
     asyncio.run(main())
+    async def main():
+    await client.connect()
+    print("Bot is running ✅")
+    await client.run_until_disconnected()
+
+asyncio.run(main())
+
+
