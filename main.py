@@ -1,13 +1,14 @@
 import os
 import asyncio
 from telethon import TelegramClient, events
+from telethon.sessions import StringSession
 
 # ===== ENV =====
 API_ID = int(os.environ["API_ID"])
 API_HASH = os.environ["API_HASH"]
 SESSION_STRING = os.environ["SESSION_STRING"]
 
-# Channels
+# Channels (fixed as you gave)
 SOURCE_CHANNEL = "@pc_alert"
 DESTINATION_CHANNEL = "@alertbyotpman"
 
@@ -17,11 +18,11 @@ REMOVE_WORDS = [
     "@ProCampaign"
 ]
 
-# ===== CLIENT (USER ACCOUNT ONLY) =====
+# ===== CLIENT (STRING SESSION ONLY) =====
 client = TelegramClient(
-    session=SESSION_STRING,
-    api_id=API_ID,
-    api_hash=API_HASH
+    StringSession(SESSION_STRING),
+    API_ID,
+    API_HASH
 )
 
 @client.on(events.NewMessage(chats=SOURCE_CHANNEL))
@@ -40,7 +41,7 @@ async def handler(event):
         await client.send_message(DESTINATION_CHANNEL, text)
 
 async def main():
-    await client.connect()   # ❌ no start(), no bot_token
+    await client.connect()
     print("Bot is running ✅")
     await client.run_until_disconnected()
 
