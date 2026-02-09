@@ -9,14 +9,20 @@ API_ID = int(os.environ["API_ID"])
 API_HASH = os.environ["API_HASH"]
 SESSION_STRING = os.environ["SESSION_STRING"]
 
-# Channels (fixed)
-SOURCE_CHANNEL = "@pc_alert"
+# ===== SOURCE & DESTINATION CHANNELS =====
+SOURCE_CHANNELS = [
+    "@pc_alert",
+    "@inrflashalert"
+]
+
 DESTINATION_CHANNEL = "@alertbyotpman"
 
-# Remove lines containing these
+# ===== REMOVE UNWANTED LINES =====
 REMOVE_WORDS = [
     "Powered By",
-    "@ProCampaign"
+    "@ProCampaign",
+    "Powered by @INRFlash",
+    "@INRFlash"
 ]
 
 # ===== AMOUNT LOGIC =====
@@ -24,7 +30,6 @@ def rupees_done_logic(text):
     def check(num_str):
         value = float(num_str)
         if value <= 1:
-            # same as it is
             if value.is_integer():
                 return str(int(value))
             else:
@@ -62,7 +67,7 @@ client = TelegramClient(
     API_HASH
 )
 
-@client.on(events.NewMessage(chats=SOURCE_CHANNEL))
+@client.on(events.NewMessage(chats=SOURCE_CHANNELS))
 async def handler(event):
     if not event.text:
         return
@@ -75,7 +80,7 @@ async def handler(event):
 
     text = "\n".join(lines).strip()
 
-    # 👉 AMOUNT RULE APPLY HERE
+    # 👉 APPLY ₹1 / DONE LOGIC
     text = rupees_done_logic(text)
 
     if text:
