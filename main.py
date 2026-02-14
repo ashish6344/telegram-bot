@@ -9,7 +9,7 @@ API_ID = int(os.environ["API_ID"])
 API_HASH = os.environ["API_HASH"]
 SESSION_STRING = os.environ["SESSION_STRING"]
 
-# ===== SOURCE & DESTINATION CHANNELS =====
+# ===== SOURCE CHANNELS =====
 SOURCE_CHANNELS = [
     "@pc_alert",
     "@inrflashalert"
@@ -37,21 +37,18 @@ def rupees_done_logic(text):
         else:
             return "DONE ✅"
 
-    # ₹50 , ₹0.5 , ₹1.00
     text = re.sub(
         r'₹\s*(\d+(?:\.\d+)?)',
         lambda m: f"₹{check(m.group(1))}" if check(m.group(1)) != "DONE ✅" else "DONE ✅",
         text
     )
 
-    # 50 rs , 0.10 rs
     text = re.sub(
         r'(\d+(?:\.\d+)?)\s*(rs|Rs)',
         lambda m: f"{check(m.group(1))} {m.group(2)}" if check(m.group(1)) != "DONE ✅" else "DONE ✅",
         text
     )
 
-    # Rs 50 , Rs 0.5
     text = re.sub(
         r'(Rs)\s*(\d+(?:\.\d+)?)',
         lambda m: f"{m.group(1)} {check(m.group(2))}" if check(m.group(2)) != "DONE ✅" else "DONE ✅",
@@ -72,6 +69,10 @@ async def handler(event):
     if not event.text:
         return
 
+    # 🔴 RULE: Skip message if contains "Waves"
+    if "waves" in event.text.lower():
+        return
+
     lines = []
     for line in event.text.split("\n"):
         if any(w.lower() in line.lower() for w in REMOVE_WORDS):
@@ -80,7 +81,6 @@ async def handler(event):
 
     text = "\n".join(lines).strip()
 
-    # 👉 APPLY ₹1 / DONE LOGIC
     text = rupees_done_logic(text)
 
     if text:
