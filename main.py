@@ -11,7 +11,7 @@ SESSION_STRING = os.environ["SESSION_STRING"]
 
 # ===== SOURCE CHANNELS =====
 SOURCE_CHANNELS = [
-    "@otpmanservice",
+    "@cb_alert",
     "@otpmanservice2"
 ]
 
@@ -20,7 +20,7 @@ DESTINATION_CHANNEL = "@alertbyotpman"
 # ===== REMOVE UNWANTED LINES =====
 REMOVE_WORDS = [
     "Powered By",
-    "@ProCampaign",
+    "@cb_alert",
     "Powered by @INRFlash",
     "@INRFlash"
 ]
@@ -93,5 +93,6 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
