@@ -15,7 +15,7 @@ SOURCE_CHANNELS = [
     "@otpmanservice2"
 ]
 
-DESTINATION_CHANNEL = "@alertbyotpman"
+DESTINATION_CHANNEL = "@conversionalert"
 
 # ===== REMOVE UNWANTED LINES =====
 REMOVE_WORDS = [
@@ -93,6 +93,7 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
 
