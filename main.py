@@ -20,7 +20,7 @@ DESTINATION_CHANNEL = "@alertbyotpman"
 # ===== REMOVE UNWANTED LINES =====
 REMOVE_WORDS = [
     "Powered By",
-    "@cb_alert",
+    "@alert",
     "Powered by @INRFlash",
     "@INRFlash"
 ]
@@ -93,3 +93,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
