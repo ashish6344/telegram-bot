@@ -4,21 +4,28 @@ import re
 from telethon import TelegramClient, events
 from telethon.sessions import StringSession
 
-# ===== ENV VARIABLES =====
+# ===== ENV =====
 API_ID = int(os.environ["API_ID"])
 API_HASH = os.environ["API_HASH"]
 SESSION_STRING = os.environ["SESSION_STRING"]
 
-# ===== CHANNELS =====
-SOURCE_CHANNEL = "@cb_alert"
-DESTINATION_CHANNEL = "@conversionalert"
-
-# ===== REMOVE THESE LINES =====
-REMOVE_WORDS = [
-    "powered by @cb_alert"
+# ===== SOURCE CHANNELS =====
+SOURCE_CHANNELS = [
+    "@cb_alert",
+    "@conversionalert"
 ]
 
-# ===== RUPEES LOGIC =====
+DESTINATION_CHANNEL = "@alertbyotpman"
+
+# ===== REMOVE UNWANTED LINES =====
+REMOVE_WORDS = [
+    "Powered By",
+    "@cb_alert",
+    "Powered by @INRFlash",
+    "@INRFlash"
+]
+
+# ===== AMOUNT LOGIC =====
 def rupees_done_logic(text):
     def check(num_str):
         value = float(num_str)
@@ -30,50 +37,50 @@ def rupees_done_logic(text):
         else:
             return "DONE ✅"
 
-    # ₹50 , ₹0.5 , ₹1.00
     text = re.sub(
         r'₹\s*(\d+(?:\.\d+)?)',
         lambda m: f"₹{check(m.group(1))}" if check(m.group(1)) != "DONE ✅" else "DONE ✅",
         text
     )
 
-    # 50 Rs , 0.10 Rs
     text = re.sub(
-        r'(\d+(?:\.\d+)?)\s*(rs|Rs|RS)',
+        r'(\d+(?:\.\d+)?)\s*(rs|Rs)',
         lambda m: f"{check(m.group(1))} {m.group(2)}" if check(m.group(1)) != "DONE ✅" else "DONE ✅",
         text
     )
 
-    # Rs 50 , Rs 0.5
     text = re.sub(
-        r'(Rs|RS)\s*(\d+(?:\.\d+)?)',
+        r'(Rs)\s*(\d+(?:\.\d+)?)',
         lambda m: f"{m.group(1)} {check(m.group(2))}" if check(m.group(2)) != "DONE ✅" else "DONE ✅",
         text
     )
 
     return text
 
-# ===== TELEGRAM CLIENT =====
+# ===== CLIENT =====
 client = TelegramClient(
     StringSession(SESSION_STRING),
     API_ID,
     API_HASH
 )
 
-@client.on(events.NewMessage(chats=SOURCE_CHANNEL))
+@client.on(events.NewMessage(chats=SOURCE_CHANNELS))
 async def handler(event):
     if not event.text:
         return
 
+    # 🔴 RULE: Skip message if contains "Waves"
+    if "waves" in event.text.lower():
+        return
+
     lines = []
     for line in event.text.split("\n"):
-        if any(word.lower() in line.lower() for word in REMOVE_WORDS):
+        if any(w.lower() in line.lower() for w in REMOVE_WORDS):
             continue
         lines.append(line)
 
     text = "\n".join(lines).strip()
 
-    # Apply rupees logic
     text = rupees_done_logic(text)
 
     if text:
