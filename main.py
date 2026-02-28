@@ -10,7 +10,7 @@ API_HASH = os.environ["API_HASH"]
 SESSION_STRING = os.environ["SESSION_STRING"]
 
 # ===== SOURCE & DESTINATION =====
-SOURCE_CHANNEL = "@campaignB_alert"
+SOURCE_CHANNEL = "@cb_alert"
 DESTINATION_CHANNEL = "@alertbyotpman"
 
 # ===== REMOVE UNWANTED LINES =====
