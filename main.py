@@ -9,18 +9,14 @@ API_ID = int(os.environ["API_ID"])
 API_HASH = os.environ["API_HASH"]
 SESSION_STRING = os.environ["SESSION_STRING"]
 
-# ===== SOURCE CHANNELS =====
-SOURCE_CHANNELS = [
-    "@campaignB_alert",
-    "@campaignB_alert"
-]
-
+# ===== SOURCE & DESTINATION =====
+SOURCE_CHANNEL = "@campaignB_alert"
 DESTINATION_CHANNEL = "@alertbyotpman"
 
 # ===== REMOVE UNWANTED LINES =====
 REMOVE_WORDS = [
     "Powered By",
-    "@alert",
+    "@ProCampaign",
     "Powered by @INRFlash",
     "@INRFlash"
 ]
@@ -64,12 +60,12 @@ client = TelegramClient(
     API_HASH
 )
 
-@client.on(events.NewMessage(chats=SOURCE_CHANNELS))
+@client.on(events.NewMessage(chats=SOURCE_CHANNEL))
 async def handler(event):
     if not event.text:
         return
 
-    # 🔴 RULE: Skip message if contains "Waves"
+    # 🔴 Skip message if contains "Waves"
     if "waves" in event.text.lower():
         return
 
@@ -93,6 +89,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-
