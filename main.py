@@ -12,7 +12,7 @@ SESSION_STRING = os.environ["SESSION_STRING"]
 # ===== SOURCE CHANNELS =====
 SOURCE_CHANNELS = [
     "@campaignB_alert",
-    "@conversionalert"
+    "@campaignB_alert"
 ]
 
 DESTINATION_CHANNEL = "@alertbyotpman"
@@ -93,5 +93,6 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
